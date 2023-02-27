@@ -1,13 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/services/weatherModel.dart';
 
 class LocationScreen extends StatefulWidget {
-  const LocationScreen({super.key});
+  final locationWeather;
+  const LocationScreen({super.key, this.locationWeather});
   @override
   State<LocationScreen> createState() => LocationScreenState();
 }
 
 class LocationScreenState extends State<LocationScreen> {
+  WeatherModel weather = WeatherModel();
+  late int temperature;
+  late int condition;
+  late String cityName;
+  late String weatherIcon;
+  late String weatherdesc;
   @override
+  void initState() {
+    super.initState();
+    updateUI(widget.locationWeather);
+  }
+
+  void updateUI(dynamic weatherData) {
+    double temp = weatherData['main']['temp'];
+    temperature = temp.toInt();
+    condition = weatherData['weather'][0]['id'];
+    cityName = weatherData['name'];
+    weatherIcon = weather.getWeatherModel(condition);
+    weatherdesc = weather.getMessage(temperature);
+    print(temperature);
+    print(condition);
+  }
+
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -26,7 +50,7 @@ class LocationScreenState extends State<LocationScreen> {
           width: double.infinity,
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage(''),
+              image: AssetImage('assets/images/bg.jpeg'),
               fit: BoxFit.cover,
             ),
           ),
@@ -42,11 +66,6 @@ class LocationScreenState extends State<LocationScreen> {
                       size: 50,
                       color: Colors.white,
                     ),
-                    Icon(
-                      Icons.location_city,
-                      size: 50,
-                      color: Colors.white,
-                    )
                   ],
                 ),
                 const SizedBox(
@@ -54,24 +73,26 @@ class LocationScreenState extends State<LocationScreen> {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const <Widget>[
+                  children: <Widget>[
                     Text(
-                      '32˚',
-                      style: TextStyle(fontWeight: FontWeight.w800),
+                      '$temperature˚',
+                      style: const TextStyle(fontWeight: FontWeight.w800),
                     ),
-                    Icon(
-                      Icons.sunny,
-                      size: 90,
-                      color: Colors.amber,
+                    Image.asset(
+                      'assets/images/$weatherIcon',
+                      height: 82,
                     ),
                   ],
                 ),
                 const SizedBox(
                   height: 90,
                 ),
-                const Text(
-                  'Weather description here ',
+                Text(
+                  '$weatherdesc',
                   textAlign: TextAlign.right,
+                  style: TextStyle(
+                    fontSize: 30,
+                  ),
                 )
               ],
             ),

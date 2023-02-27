@@ -17,8 +17,6 @@ class loadingScreen extends StatefulWidget {
 }
 
 class _loadingScreenState extends State<loadingScreen> {
-  double? latitude;
-  double? longitude;
   @override
   void initState() {
     super.initState();
@@ -28,28 +26,33 @@ class _loadingScreenState extends State<loadingScreen> {
   void getLocationData() async {
     location locate = location();
     await locate.getCurrentlocation();
-    latitude = locate.latitude;
-    longitude = locate.longitude;
     NetwrokHelper netwrokHelper = NetwrokHelper(
-        'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$apiKey');
+        'https://api.openweathermap.org/data/2.5/weather?lat=${locate.latitude}&lon=${locate.longitude}&appid=$apiKey&units=metric');
     var weatherData = await netwrokHelper.getData();
 
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) {
-        return const LocationScreen();
+        return LocationScreen(
+          locationWeather: weatherData,
+        );
       }),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.black12,
       body: Center(
-        child: SpinKitDoubleBounce(
-          color: Color.fromARGB(255, 255, 255, 255),
-          size: 100.0,
+        child: Column(
+          children: const [
+            SpinKitDoubleBounce(
+              color: Color.fromARGB(255, 255, 255, 255),
+              size: 100.0,
+            ),
+            Text('Retirieving you location'),
+          ],
         ),
       ),
     );
